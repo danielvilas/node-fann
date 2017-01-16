@@ -21,6 +21,10 @@ class NNet : public Nan::ObjectWrap
     static NAN_METHOD(NewShortcut);
     static NAN_METHOD(NewFromFile);
     //static NAN_METHOD(CloneNet);
+	static NAN_GETTER(GetErrorFunction);
+	static NAN_SETTER(SetErrorFunction);
+	static NAN_GETTER(GetErrorStop);
+	static NAN_SETTER(SetErrorStop);
     static NAN_GETTER(GetTrainingAlgorithm);
     static NAN_SETTER(SetTrainingAlgorithm);
     static NAN_GETTER(GetLearningRate);
@@ -49,6 +53,7 @@ class NNet : public Nan::ObjectWrap
     static NAN_METHOD(Run);
     static NAN_METHOD(CascadeTrain);
     static NAN_METHOD(SaveToFile);
+	static NAN_METHOD(New);
 
   private:
     struct fann *FANN;

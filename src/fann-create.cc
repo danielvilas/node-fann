@@ -38,8 +38,7 @@ int NNet::_GetLayersFromArray(unsigned int *&layers, Local<Array> a)
 NAN_METHOD(NNet::NewStandard)
 {
   Nan::HandleScope scope;
-  NNet *net = new NNet();
-  net->Wrap(info.This());
+  NNet *net = Nan::ObjectWrap::Unwrap<NNet>(info.This());
   net->CreateStandard(info);
   info.GetReturnValue().Set(info.This());
 }
@@ -47,8 +46,7 @@ NAN_METHOD(NNet::NewStandard)
 NAN_METHOD(NNet::NewSparse)
 {
   Nan::HandleScope scope;
-  NNet *net = new NNet();
-  net->Wrap(info.This());
+  NNet *net = Nan::ObjectWrap::Unwrap<NNet>(info.This());
   net->CreateSparse(info);
   info.GetReturnValue().Set(info.This());
 }
@@ -56,8 +54,7 @@ NAN_METHOD(NNet::NewSparse)
 NAN_METHOD(NNet::NewShortcut)
 {
   Nan::HandleScope scope;
-  NNet *net = new NNet();
-  net->Wrap(info.This());
+  NNet *net = Nan::ObjectWrap::Unwrap<NNet>(info.This());
   net->CreateShortcut(info);
   info.GetReturnValue().Set(info.This());
 }
@@ -65,8 +62,7 @@ NAN_METHOD(NNet::NewShortcut)
 NAN_METHOD(NNet::NewFromFile)
 {
   Nan::HandleScope scope;
-  NNet *net = new NNet();
-  net->Wrap(info.This());
+  NNet *net = Nan::ObjectWrap::Unwrap<NNet>(info.This());
   net->CreateFromFile(info);
   info.GetReturnValue().Set(info.This());
 }
@@ -74,7 +70,7 @@ NAN_METHOD(NNet::NewFromFile)
 /* for FANN >= 2.2.0
 NAN_METHOD(NNet::CloneNet)
 {
-    NanScope();
+    Nan::HandleScope scope;
 //    if (!NNet::HasInstance(info[0]))
 //      return Nan::ThrowError("First argument must be existing network.");
   NNet *net = new NNet();
@@ -209,7 +205,7 @@ NAN_METHOD(NNet::SaveToFile)
   if (info.Length() != 1 || !info[0]->IsString())
     return Nan::ThrowError("usage: net.save(\"filename.nnet\")");
 
-  NNet *net = ObjectWrap::Unwrap<NNet>(info.This());
+  NNet *net = Nan::ObjectWrap::Unwrap<NNet>(info.This());
 
   String::Utf8Value name(info[0].As<String>());
 
@@ -220,8 +216,8 @@ NAN_METHOD(NNet::SaveToFile)
 /* for FANN >= 2.2.0
 NAN_METHOD(NNet::CreateClone)
 {
-  NNet *currnet = ObjectWrap::Unwrap<NNet>(info.This());
-  NNet *oldnet = ObjectWrap::Unwrap<NNet>(info[0]->ToObject());
+  NNet *currnet = Nan::ObjectWrap::Unwrap<NNet>(info.This());
+  NNet *oldnet = Nan::ObjectWrap::Unwrap<NNet>(info[0]->ToObject());
   currnet->FANN = fann_copy(oldnet->FANN);
 //  printf("!!!!!!!!!!!!!! %d %d\n", currnet->something, oldnet->something);
   return;
@@ -230,7 +226,7 @@ NAN_METHOD(NNet::CreateClone)
 NAN_METHOD(NNet::Run)
 {
   Nan::HandleScope scope;
-  NNet *net = ObjectWrap::Unwrap<NNet>(info.This());
+  NNet *net = Nan::ObjectWrap::Unwrap<NNet>(info.This());
   if (info.Length() < 1)
     return Nan::ThrowError("No arguments supplied");
   if (!info[0]->IsArray())

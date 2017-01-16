@@ -9,18 +9,18 @@ void NNet::PrototypeInit(Local<FunctionTemplate> t)
 {
   t->InstanceTemplate()->SetInternalFieldCount(1);
   t->SetClassName(Nan::New<String>("FANN").ToLocalChecked());
+
+  Nan::SetPrototypeMethod(t, "standard", NewStandard);
+  Nan::SetPrototypeMethod(t, "sparse", NewSparse);
+  Nan::SetPrototypeMethod(t, "shortcut", NewShortcut);
+  Nan::SetPrototypeMethod(t, "fromFile", NewFromFile);
+  
+  
   Nan::SetPrototypeMethod(t, "train", Train);
   Nan::SetPrototypeMethod(t, "cascadetrain", CascadeTrain);
   Nan::SetPrototypeMethod(t, "train_once", TrainOnce);
   Nan::SetPrototypeMethod(t, "run", Run);
   Nan::SetPrototypeMethod(t, "save", SaveToFile);
-
-  // deprecated in favor of require('fann').get_...
-  /*Nan::SetPrototypeMethod(t, "get_all_training_algorithms", GetTrainingAlgorithmList);
-  Nan::SetPrototypeMethod(t, "get_all_activation_functions", GetActivationFunctionList);
-  Nan::SetPrototypeMethod(t, "get_all_network_types", GetNetworkTypeList);
-  Nan::SetPrototypeMethod(t, "get_all_stop_functions", GetStopFuncList);
-  Nan::SetPrototypeMethod(t, "get_all_error_functions", GetErrorFuncList);*/
 
   Nan::SetPrototypeMethod(t, "activation_function", ActivationFunction);
   Nan::SetPrototypeMethod(t, "activation_function_hidden", ActivationFunctionHidden);
@@ -42,35 +42,54 @@ void NNet::PrototypeInit(Local<FunctionTemplate> t)
   Nan::SetPrototypeMethod(t, "set_weight_array", SetWeights);
   Nan::SetPrototypeMethod(t, "get_weight", GetWeights);
   Nan::SetPrototypeMethod(t, "set_weight", SetWeights);
-  Nan::SetAccessor(t->InstanceTemplate(), Nan::New<String>("training_algorithm").ToLocalChecked(), GetTrainingAlgorithm, SetTrainingAlgorithm);
-  Nan::SetAccessor(t->InstanceTemplate(), Nan::New<String>("learning_rate").ToLocalChecked(), GetLearningRate, SetLearningRate);
-  Nan::SetAccessor(t->InstanceTemplate(), Nan::New<String>("learning_momentum").ToLocalChecked(), GetLearningMomentum, SetLearningMomentum);
-  Nan::SetAccessor(t->InstanceTemplate(), Nan::New<String>("layers").ToLocalChecked(), GetLayerArray);
+
+  Nan::SetAccessor(t->InstanceTemplate(), Nan::New("training_algorithm").ToLocalChecked(), GetTrainingAlgorithm, SetTrainingAlgorithm);
+  Nan::SetAccessor(t->InstanceTemplate(), Nan::New("train_error_function").ToLocalChecked(), GetErrorFunction, SetErrorFunction);
+  Nan::SetAccessor(t->InstanceTemplate(), Nan::New("train_stop_function").ToLocalChecked(), GetErrorStop, SetErrorStop);
+  Nan::SetAccessor(t->InstanceTemplate(), Nan::New("learning_rate").ToLocalChecked(), GetLearningRate, SetLearningRate);
+  Nan::SetAccessor(t->InstanceTemplate(), Nan::New("learning_momentum").ToLocalChecked(), GetLearningMomentum, SetLearningMomentum);
+  Nan::SetAccessor(t->InstanceTemplate(), Nan::New("layers").ToLocalChecked(), GetLayerArray, 0);
+
+  /*
+  t->InstanceTemplate()->SetAccessor(Nan::New<String>("training_algorithm").ToLocalChecked(), GetTrainingAlgorithm, SetTrainingAlgorithm);
+  t->InstanceTemplate()->SetAccessor(Nan::New<String>("learning_rate").ToLocalChecked(), GetLearningRate, SetLearningRate);
+  t->InstanceTemplate()->SetAccessor(Nan::New<String>("learning_momentum").ToLocalChecked(), GetLearningMomentum, SetLearningMomentum);
+  t->InstanceTemplate()->SetAccessor(Nan::New<String>("layers").ToLocalChecked(), GetLayerArray);
+  */
 }
 
-void NNet::Initialize(Handle<Object> t)
+  static inline Nan::Persistent<v8::Function> & constructor() {
+    static Nan::Persistent<v8::Function> my_constructor;
+    return my_constructor;
+  }
+
+  NAN_METHOD(NNet::New) {
+    if (info.IsConstructCall()) {
+      NNet *obj = new NNet();
+      obj->Wrap(info.This());
+      info.GetReturnValue().Set(info.This());
+    } else {
+      const int argc = 0;
+      v8::Local<v8::Value> argv[argc] = {};
+      v8::Local<v8::Function> cons = Nan::New(constructor());
+      info.GetReturnValue().Set(cons->NewInstance(argc, argv));
+    }
+  }
+
+void NNet::Initialize(Handle<Object> target)
 {
   Nan::HandleScope scope;
-  Local<FunctionTemplate> t1 = Nan::New<FunctionTemplate>(NewStandard);
-  Local<FunctionTemplate> t2 = Nan::New<FunctionTemplate>(NewSparse);
-  Local<FunctionTemplate> t3 = Nan::New<FunctionTemplate>(NewShortcut);
-  Local<FunctionTemplate> t4 = Nan::New<FunctionTemplate>(NewFromFile);
-//  Local<FunctionTemplate> t5 = Nan::New<FunctionTemplate>(CloneNet);
-  PrototypeInit(t1);
-  PrototypeInit(t2);
-  PrototypeInit(t3);
-  PrototypeInit(t4);
-  t->Set(Nan::New<String>("standard").ToLocalChecked(), t1->GetFunction());
-  t->Set(Nan::New<String>("sparse").ToLocalChecked(), t2->GetFunction());
-  t->Set(Nan::New<String>("shortcut").ToLocalChecked(), t3->GetFunction());
-  t->Set(Nan::New<String>("load").ToLocalChecked(), t4->GetFunction());
-//  t->Set(String::NewSymbol("clone"), t4->GetFunction());
-
-  Nan::SetMethod(t, "get_all_training_algorithms", GetTrainingAlgorithmList);
-  Nan::SetMethod(t, "get_all_activation_functions", GetActivationFunctionList);
-  Nan::SetMethod(t, "get_all_network_types", GetNetworkTypeList);
-  Nan::SetMethod(t, "get_all_stop_functions", GetStopFuncList);
-  Nan::SetMethod(t, "get_all_error_functions", GetErrorFuncList);
+  Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(New);
+  PrototypeInit(tpl);
+  constructor().Reset(Nan::GetFunction(tpl).ToLocalChecked());
+  Nan::Set(target, Nan::New("net").ToLocalChecked(),
+      Nan::GetFunction(tpl).ToLocalChecked());
+  
+  Nan::SetMethod(target, "get_all_training_algorithms", GetTrainingAlgorithmList);
+  Nan::SetMethod(target, "get_all_activation_functions", GetActivationFunctionList);
+  Nan::SetMethod(target, "get_all_network_types", GetNetworkTypeList);
+  Nan::SetMethod(target, "get_all_stop_functions", GetStopFuncList);
+  Nan::SetMethod(target, "get_all_error_functions", GetErrorFuncList);
 }
 
 extern "C" void init (Handle<Object> target)
@@ -82,3 +101,4 @@ extern "C" void init (Handle<Object> target)
 #ifdef NODE_MODULE
 NODE_MODULE(fann, init)
 #endif
+

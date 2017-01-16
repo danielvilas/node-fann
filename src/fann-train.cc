@@ -69,7 +69,7 @@ void NNet::TrainOnData(struct fann_train_data *traindata, unsigned int max_epoch
 NAN_METHOD(NNet::Train)
 {
   Nan::HandleScope scope;
-  NNet *net = ObjectWrap::Unwrap<NNet>(info.This());
+  NNet *net = Nan::ObjectWrap::Unwrap<NNet>(info.This());
   struct fann_train_data *traindata = NULL;
 
   if (info.Length() < 1)
@@ -118,7 +118,7 @@ NAN_METHOD(NNet::Train)
 NAN_METHOD(NNet::TrainOnce)
 {
   Nan::HandleScope scope;
-  NNet *net = ObjectWrap::Unwrap<NNet>(info.This());
+  NNet *net = Nan::ObjectWrap::Unwrap<NNet>(info.This());
   if (info.Length() < 2)
     return Nan::ThrowError("2 arguments needed");
 

@@ -5,7 +5,74 @@
 #include <string.h>
 #include <stdio.h>
 #include "node-fann.h"
-#include <nan.h>
+
+NAN_GETTER(NNet::GetErrorFunction)
+{
+  Nan::HandleScope scope;
+  Local<Object> self = info.Holder();
+  NNet *net = Nan::ObjectWrap::Unwrap<NNet>(self);
+  int size = sizeof(FANN_ERRORFUNC_NAMES)/sizeof(char*);
+  enum fann_errorfunc_enum  algo = fann_get_train_error_function(net->FANN);
+
+  if (algo >= 0 && algo < size) {
+    info.GetReturnValue().Set(NormalizeName(FANN_ERRORFUNC_NAMES[algo], ERRORFUNC_PREFIX, sizeof(ERRORFUNC_PREFIX)-1));
+  } else {
+    return;
+  }
+}
+
+NAN_SETTER(NNet::SetErrorFunction)
+{
+  Nan::HandleScope scope;
+  Local<Object> self = info.Holder();
+  NNet *net = Nan::ObjectWrap::Unwrap<NNet>(self);
+  int size = sizeof(FANN_ERRORFUNC_NAMES)/sizeof(char*);
+  int num = -1;
+
+  if (value->IsString()) {
+    num = _SeekCharArray(value.As<String>(), FANN_ERRORFUNC_NAMES, size, ERRORFUNC_PREFIX);
+  } else if (value->IsNumber()) {
+    num = value->NumberValue();
+  }
+
+  if (num >= 0 && num < size) {
+    fann_set_train_error_function(net->FANN, fann_errorfunc_enum(num));
+  }
+}
+
+NAN_GETTER(NNet::GetErrorStop)
+{
+  Nan::HandleScope scope;
+  Local<Object> self = info.Holder();
+  NNet *net = Nan::ObjectWrap::Unwrap<NNet>(self);
+  int size = sizeof(FANN_STOPFUNC_NAMES)/sizeof(char*);
+  enum fann_stopfunc_enum   algo = fann_get_train_stop_function(net->FANN);
+
+  if (algo >= 0 && algo < size) {
+    info.GetReturnValue().Set(NormalizeName(FANN_STOPFUNC_NAMES[algo], STOPFUNC_PREFIX, sizeof(STOPFUNC_PREFIX)-1));
+  } else {
+    return;
+  }
+}
+
+NAN_SETTER(NNet::SetErrorStop)
+{
+  Nan::HandleScope scope;
+  Local<Object> self = info.Holder();
+  NNet *net = Nan::ObjectWrap::Unwrap<NNet>(self);
+  int size = sizeof(FANN_STOPFUNC_NAMES)/sizeof(char*);
+  int num = -1;
+
+  if (value->IsString()) {
+    num = _SeekCharArray(value.As<String>(), FANN_STOPFUNC_NAMES, size, STOPFUNC_PREFIX);
+  } else if (value->IsNumber()) {
+    num = value->NumberValue();
+  }
+
+  if (num >= 0 && num < size) {
+    fann_set_train_stop_function(net->FANN, fann_stopfunc_enum (num));
+  }
+}
 
 NAN_GETTER(NNet::GetTrainingAlgorithm)
 {
