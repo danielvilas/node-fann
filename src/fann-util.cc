@@ -6,6 +6,12 @@
 #include <ctype.h>
 #include "node-futil.h"
 
+#ifdef _MSC_VER 
+//not #if defined(_WIN32) || defined(_WIN64) because we have strncasecmp in mingw
+#define strncasecmp _strnicmp
+#define strcasecmp _stricmp
+#endif
+
 char* strncpy_lower(char *dest, const char *src, size_t n)
 {
   char *ret = dest;

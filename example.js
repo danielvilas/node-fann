@@ -2,8 +2,8 @@
 // This neural network calculates XOR function (classic example)
 //
 
-var fann = require('./build/Release/fann')
-var net = new fann.standard(2,3,1)
+var fann = require('./build/Release/fann2')
+var net = new fann.net().standard(2,3,1)
 
 var data = [
   [[0, 0], [0]],
