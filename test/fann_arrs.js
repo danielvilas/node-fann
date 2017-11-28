@@ -5,7 +5,7 @@ describe('fann_arrs', function () {
   var net
 
   before(function () {
-    net = new fann.standard(1,10,1)
+    net = new fann.net().standard(1,10,1)
   })
 
   it('get all activation functions', function () {
@@ -33,7 +33,7 @@ describe('fann_arrs', function () {
   })
 
   it('get all training algoritums', function () {
-    var expected = [ 'incremental', 'batch', 'rprop', 'quickprop' ]
+    var expected = [ 'incremental', 'batch', 'rprop', 'quickprop', 'sarprop' ]
     assert.deepEqual(fann.get_all_training_algorithms(), expected)
   })
 

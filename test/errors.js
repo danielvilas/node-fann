@@ -6,7 +6,7 @@ describe('errors', function () {
 
   it('load from bad file', function () {
     assert.throws(function() {
-      var net = new fann.load(String(Math.random()))
+      var net = new fann.net().fromFile(String(Math.random()))
     }, /failed to create neural network/i)
   })
 })

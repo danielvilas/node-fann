@@ -12,8 +12,8 @@
   "keywords"        : [ "fann", "neural", "network", "artificial", "intelligence"
                       , "neural network", "artificial intelligence", "machine learning" ],
 
-  "license"         : { "type"  : "WTFPL"
-                      , "url"   : "http://www.wtfpl.net/txt/copying/" },
+  "license"         : { "type"  : "MIT"},
+
 
   "dependencies"    : { "nan"   : "~2.3" },
 

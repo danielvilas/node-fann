@@ -30,18 +30,18 @@ NAN_METHOD(NNet::CascadeTrain)
 
   unsigned int max_neurons = 100000;
   unsigned int neurons_between_reports = 1000;
-  float desired_error = 0.001;
+  float desired_error = 0.001f;
   int scale = 0;
   if (info.Length() >= 2) {
     Local<Object> params = info[1].As<Object>();
     if (params->Has(Nan::New<String>("neurons").ToLocalChecked())) {
-      max_neurons = params->Get(Nan::New<String>("neurons").ToLocalChecked())->IntegerValue();
+      max_neurons = (unsigned int)params->Get(Nan::New<String>("neurons").ToLocalChecked())->IntegerValue();
     }
     if (params->Has(Nan::New<String>("neurons_between_reports").ToLocalChecked())) {
-      neurons_between_reports = params->Get(Nan::New<String>("neurons_between_reports").ToLocalChecked())->IntegerValue();
+      neurons_between_reports = (int)params->Get(Nan::New<String>("neurons_between_reports").ToLocalChecked())->IntegerValue();
     }
     if (params->Has(Nan::New<String>("error").ToLocalChecked())) {
-      desired_error = params->Get(Nan::New<String>("error").ToLocalChecked())->NumberValue();
+      desired_error = (float)params->Get(Nan::New<String>("error").ToLocalChecked())->NumberValue();
     }
     if (params->Has(Nan::New<String>("scale").ToLocalChecked())) {
       scale = params->Get(Nan::New<String>("scale").ToLocalChecked())->BooleanValue();

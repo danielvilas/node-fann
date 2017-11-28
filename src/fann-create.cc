@@ -27,7 +27,7 @@ int NNet::_GetLayersFromArray(unsigned int *&layers, Local<Array> a)
 
   layers = new unsigned int[len];
   for (unsigned i=0; i<a->Length(); i++) {
-    int n = a->Get(i)->IntegerValue();
+    int n = (int) a->Get(i)->IntegerValue();
     if (n < 1)
       return 0;
     layers[i] = n;
@@ -146,7 +146,7 @@ NAN_METHOD(NNet::CreateSparse)
     return Nan::ThrowError("Wrong arguments supplied");
   }
 
-  FANN = fann_create_sparse_array(info[0]->NumberValue(), len, layers);
+  FANN = fann_create_sparse_array((float)info[0]->NumberValue(), len, layers);
   if (FANN == NULL)
     return Nan::ThrowError("Failed to create neural network");
 

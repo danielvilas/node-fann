@@ -9,7 +9,7 @@ describe('algs_rate', function () {
    */
 
   before(function () {
-    net = new fann.standard(1,10,1)
+    net = new fann.net().standard(1,10,1)
   })
 
   it("wrong algorithm, shouldn't change", function () {

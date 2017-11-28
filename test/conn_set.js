@@ -6,7 +6,7 @@ describe('conn_set', function () {
   var conn
 
   before(function () {
-    net = new fann.standard(2,5,1)
+    net = new fann.net().standard(2,5,1)
   })
 
   /*

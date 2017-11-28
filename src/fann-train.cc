@@ -89,18 +89,18 @@ NAN_METHOD(NNet::Train)
 
   unsigned int max_epochs = 100000;
   unsigned int epochs_between_reports = 1000;
-  float desired_error = 0.001;
+  float desired_error = 0.001f;
   int scale = 0;
   if (info.Length() >= 2) {
     Local<Object> params = info[1].As<Object>();
     if (params->Has(Nan::New<String>("epochs").ToLocalChecked())) {
-      max_epochs = params->Get(Nan::New<String>("epochs").ToLocalChecked())->IntegerValue();
+      max_epochs = (int) params->Get(Nan::New<String>("epochs").ToLocalChecked())->IntegerValue();
     }
     if (params->Has(Nan::New<String>("epochs_between_reports").ToLocalChecked())) {
-      epochs_between_reports = params->Get(Nan::New<String>("epochs_between_reports").ToLocalChecked())->IntegerValue();
+      epochs_between_reports = (int) params->Get(Nan::New<String>("epochs_between_reports").ToLocalChecked())->IntegerValue();
     }
     if (params->Has(Nan::New<String>("error").ToLocalChecked())) {
-      desired_error = params->Get(Nan::New<String>("error").ToLocalChecked())->NumberValue();
+      desired_error = (float) params->Get(Nan::New<String>("error").ToLocalChecked())->NumberValue();
     }
     if (params->Has(Nan::New<String>("scale").ToLocalChecked())) {
       scale = params->Get(Nan::New<String>("scale").ToLocalChecked())->BooleanValue();

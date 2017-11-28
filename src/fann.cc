@@ -72,7 +72,7 @@ void NNet::PrototypeInit(Local<FunctionTemplate> t)
       //const int argc = 0;
       //v8::Local<v8::Value> argv[] = {};
       v8::Local<v8::Function> cons = Nan::New(constructor());
-      info.GetReturnValue().Set(cons->NewInstance(0, NULL));
+      info.GetReturnValue().Set(Nan::NewInstance(cons, 0, NULL).ToLocalChecked());
     }
   }
 

@@ -32,7 +32,7 @@ NAN_SETTER(NNet::SetErrorFunction)
   if (value->IsString()) {
     num = _SeekCharArray(value.As<String>(), FANN_ERRORFUNC_NAMES, size, ERRORFUNC_PREFIX);
   } else if (value->IsNumber()) {
-    num = value->NumberValue();
+    num = (int)value->NumberValue();
   }
 
   if (num >= 0 && num < size) {
@@ -66,7 +66,7 @@ NAN_SETTER(NNet::SetErrorStop)
   if (value->IsString()) {
     num = _SeekCharArray(value.As<String>(), FANN_STOPFUNC_NAMES, size, STOPFUNC_PREFIX);
   } else if (value->IsNumber()) {
-    num = value->NumberValue();
+    num = (int) value->NumberValue();
   }
 
   if (num >= 0 && num < size) {
@@ -114,7 +114,7 @@ NAN_SETTER(NNet::SetTrainingAlgorithm)
   if (value->IsString()) {
     num = _SeekCharArray(value.As<String>(), FANN_TRAIN_NAMES, size, TRAIN_PREFIX);
   } else if (value->IsNumber()) {
-    num = value->NumberValue();
+    num = (int) value->NumberValue();
   }
 
   if (num >= 0 && num < size) {
@@ -148,7 +148,7 @@ NAN_SETTER(NNet::SetLearningRate)
   Local<Object> self = info.Holder();
   NNet *net = Nan::ObjectWrap::Unwrap<NNet>(self);
 
-  fann_set_learning_rate(net->FANN, value->NumberValue());
+  fann_set_learning_rate(net->FANN, (float)value->NumberValue());
 }
 
 NAN_SETTER(NNet::SetLearningMomentum)
@@ -157,7 +157,7 @@ NAN_SETTER(NNet::SetLearningMomentum)
   Local<Object> self = info.Holder();
   NNet *net = Nan::ObjectWrap::Unwrap<NNet>(self);
 
-  fann_set_learning_momentum(net->FANN, value->NumberValue());
+  fann_set_learning_momentum(net->FANN, (float)value->NumberValue());
 }
 
 NAN_METHOD(NNet::ActivationFunction)
@@ -168,15 +168,15 @@ NAN_METHOD(NNet::ActivationFunction)
     return Nan::ThrowError("Usage: func = activation_function(layer, neuron) or activation_function(layer, neuron, newfunc)");
 
   int size = sizeof(FANN_ACTIVATIONFUNC_NAMES)/sizeof(char*);
-  int layer = info[0]->IntegerValue();
-  int neuron = info[1]->IntegerValue();
+  int layer = (int)info[0]->IntegerValue();
+  int neuron = (int)info[1]->IntegerValue();
 
   if (info.Length() >= 3) {
     int num = -1;
     if (info[2]->IsString()) {
       num = _SeekCharArray(info[2].As<String>(), FANN_ACTIVATIONFUNC_NAMES, size, FANN_PREFIX);
     } else if (info[2]->IsNumber()) {
-      num = info[2]->NumberValue();
+      num =(int) info[2]->NumberValue();
     }
 
     if (num >= 0 && num < size) {
@@ -203,7 +203,7 @@ NAN_METHOD(NNet::ActivationFunctionHidden)
     if (info[0]->IsString()) {
       num = _SeekCharArray(info[0].As<String>(), FANN_ACTIVATIONFUNC_NAMES, size, FANN_PREFIX);
     } else if (info[0]->IsNumber()) {
-      num = info[0]->NumberValue();
+      num = (int) info[0]->NumberValue();
     }
 
     if (num >= 0 && num < size) {
@@ -230,7 +230,7 @@ NAN_METHOD(NNet::ActivationFunctionOutput)
     if (info[0]->IsString()) {
       num = _SeekCharArray(info[0].As<String>(), FANN_ACTIVATIONFUNC_NAMES, size, FANN_PREFIX);
     } else if (info[0]->IsNumber()) {
-      num = info[0]->NumberValue();
+      num = (int)info[0]->NumberValue();
     }
 
     if (num >= 0 && num < size) {
@@ -368,7 +368,10 @@ NAN_METHOD(NNet::GetWeights)
   Local<Object> result_object = Nan::New<Object>();
   for (int i=0; i<size; i++) {
     Local<Object> obj;
-    if (!result_object->Has(conns[i].from_neuron)) {
+
+    bool has = Nan::Has(result_object,conns[i].from_neuron).FromMaybe(false);
+    //if (!result_object->Has(conns[i].from_neuron)) {
+    if(!has){
       obj = Nan::New<Object>();
       result_object->Set(conns[i].from_neuron, obj);
     } else {
@@ -399,8 +402,8 @@ NAN_METHOD(NNet::SetWeightsArr)
     Local<Object> obj = arg->Get(idx).As<Object>();
     Local<Array> keys2 = obj->GetOwnPropertyNames();
     for (unsigned j=0; j<keys2->Length(); j++) {
-      conns[counter].from_neuron = idx->IntegerValue();
-      conns[counter].to_neuron = keys2->Get(j)->IntegerValue();
+      conns[counter].from_neuron = (unsigned int) idx->IntegerValue();
+      conns[counter].to_neuron = (unsigned int) keys2->Get(j)->IntegerValue();
       conns[counter].weight = obj->Get(keys2->Get(j))->NumberValue();
       counter++;
     }
@@ -421,8 +424,8 @@ NAN_METHOD(NNet::SetWeights)
   if (info.Length() < 3)
     return Nan::ThrowError("Usage: set_weights(new_object) or set_weight(from_neuron, to_neuron, weight)");
 
-  unsigned int from_neuron = info[0]->IntegerValue();
-  unsigned int to_neuron = info[1]->IntegerValue();
+  unsigned int from_neuron = (unsigned int) info[0]->IntegerValue();
+  unsigned int to_neuron = (unsigned int) info[1]->IntegerValue();
   fann_type weight = info[2]->NumberValue();
 
   fann_set_weight(net->FANN, from_neuron, to_neuron, weight);

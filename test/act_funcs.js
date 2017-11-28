@@ -5,7 +5,7 @@ describe('act_funcs', function () {
   var net
 
   before(function () {
-    net = new fann.standard(1,10,1)
+    net = new fann.net().standard(1,10,1)
   })
 
   it('default activation function', function () {

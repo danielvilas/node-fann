@@ -5,7 +5,7 @@ describe('neu_count', function () {
   var net
 
   before(function () {
-    net = new fann.shortcut([ 1,2,3,4 ])
+    net = new fann.net().shortcut([ 1,2,3,4 ])
   })
 
   it('1 input layer and 4 output', function () {
